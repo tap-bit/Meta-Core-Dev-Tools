@@ -1,6 +1,5 @@
 import { initAbilityGenerator } from './generators/ability-gen.js';
 
-// Registry maps tab IDs to their module initializer functions
 const tabInitializers = {
   'ability-gen': initAbilityGenerator,
 };
@@ -10,8 +9,7 @@ async function loadTab(tabBtn) {
   const src = tabBtn.dataset.src;
   const container = document.getElementById('tab-container');
 
-  // Update button active states
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
   tabBtn.classList.add('active');
 
   try {
@@ -20,22 +18,20 @@ async function loadTab(tabBtn) {
     
     container.innerHTML = await response.text();
 
-    // Initialize JS logic tied to the active tab if present
     if (tabInitializers[tabId]) {
       tabInitializers[tabId]();
     }
   } catch (err) {
-    container.innerHTML = `<div class="coming-soon"><h2>Error loading tab content</h2></div>`;
+    container.innerHTML = `<div class="card coming-soon-card"><div class="section-title">Error Loading Tool</div></div>`;
     console.error(err);
   }
 }
 
-// Global Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  const defaultTab = document.querySelector('.tab-btn.active');
+  const defaultTab = document.querySelector('.tab.active');
   if (defaultTab) loadTab(defaultTab);
 
-  document.querySelectorAll('.tab-btn').forEach(button => {
+  document.querySelectorAll('.tab').forEach(button => {
     button.addEventListener('click', (e) => loadTab(e.currentTarget));
   });
 });
