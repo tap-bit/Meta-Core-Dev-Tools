@@ -24,13 +24,13 @@ function generateData() {
     "format_version": "1.20.50",
     "minecraft:item": {
       "description": {
-        "identifier": `ability:${snakeName}`,
+        "identifier": `ability:${snakeName || 'ability'}`,
         "menu_category": { "category": "items" }
       },
       "components": {
         "minecraft:max_stack_size": maxStack,
         "minecraft:display_name": { "value": finalDisplayName },
-        "minecraft:icon": { "texture": snakeName },
+        "minecraft:icon": { "texture": snakeName || 'ability' },
         "minecraft:use_modifiers": {
           "use_duration": 99999,
           "movement_modifier": moveModifier
@@ -69,21 +69,54 @@ function downloadJSON() {
 
 function copyJSON() {
   const { jsonString } = generateData();
-  navigator.clipboard.writeText(jsonString).then(() => {
-    alert('JSON copied to clipboard!');
-  });
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(jsonString).then(() => {
+      alert('JSON copied to clipboard!');
+    }).catch(err => {
+      console.error('Clipboard copy failed:', err);
+    });
+  } else {
+    // Fallback for non-HTTPS or unsupported clipboard API environments
+    const textArea = document.createElement("textarea");
+    textArea.value = jsonString;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      alert('JSON copied to clipboard!');
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+    }
+    document.body.removeChild(textArea);
+  }
 }
 
 export function initAbilityGenerator() {
-  const inputs = ['ability-name', 'color-select', 'style-bold', 'style-italic', 'style-obfuscated', 'max-stack', 'movement-modifier'];
+  const inputIds = [
+    'ability-name', 
+    'color-select', 
+    'style-bold', 
+    'style-italic', 
+    'style-obfuscated', 
+    'max-stack', 
+    'movement-modifier'
+  ];
   
-  inputs.forEach(id => {
+  // Attach both 'input' and 'change' events so dropdowns and checkboxes update immediately
+  inputIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener('input', updateJSON);
+    if (el) {
+      el.addEventListener('input', updateJSON);
+      el.addEventListener('change', updateJSON);
+    }
   });
 
   document.getElementById('btn-download')?.addEventListener('click', downloadJSON);
   document.getElementById('btn-copy')?.addEventListener('click', copyJSON);
 
+  // Initial preview render upon tab load
   updateJSON();
 }
