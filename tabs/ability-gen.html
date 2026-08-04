@@ -1,0 +1,91 @@
+<div class="tool-grid">
+  <div class="panel">
+    <h2>Ability Configuration</h2>
+    
+    <div class="form-group">
+      <label for="ability-name">Ability Name <span style="color: #ff5252;">*</span></label>
+      <input type="text" id="ability-name" placeholder="e.g. ground smash" value="ground smash">
+      <small style="color: var(--text-muted);">Auto-converts spaces to lowercase snake_case for IDs.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="color-select">Display Color</label>
+      <select id="color-select" class="color-select">
+        <option value="">None (Default White)</option>
+        <option value="§0">§0 Black</option>
+        <option value="§1">§1 Dark Blue</option>
+        <option value="§2">§2 Dark Green</option>
+        <option value="§3">§3 Dark Aqua</option>
+        <option value="§4">§4 Dark Red</option>
+        <option value="§5">§5 Dark Purple</option>
+        <option value="§6">§6 Gold</option>
+        <option value="§7">§7 Gray</option>
+        <option value="§8">§8 Dark Gray</option>
+        <option value="§9">§9 Blue</option>
+        <option value="§a">§a Green</option>
+        <option value="§b">§b Aqua</option>
+        <option value="§c">§c Red</option>
+        <option value="§d">§d Light Purple</option>
+        <option value="§e" selected>§e Yellow</option>
+        <option value="§f">§f White</option>
+        <option value="§g">§g Minecoin Gold</option>
+        <option value="§h">§h Quartz</option>
+        <option value="§i">§i Iron</option>
+        <option value="§j">§j Netherite</option>
+        <option value="§m">§m Redstone</option>
+        <option value="§n">§n Copper</option>
+        <option value="§p">§p Gold (Material)</option>
+        <option value="§q">§q Emerald</option>
+        <option value="§s">§s Diamond</option>
+        <option value="§t">§t Lapis</option>
+        <option value="§u">§u Amethyst</option>
+        <option value="§v">§v Resin</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Text Styles</label>
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="style-bold"> Bold (§l)
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="style-italic"> Italic (§o)
+        </label>
+        <label class="checkbox-label">
+          <input type="checkbox" id="style-obfuscated"> Obfuscated (§k)
+        </label>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="max-stack">
+          Max Stack Size 
+          <span class="optional-tag">(Optional)</span>
+        </label>
+        <input type="number" id="max-stack" placeholder="1 (Default)" min="1" max="64">
+      </div>
+
+      <div class="form-group">
+        <label for="movement-modifier">
+          Movement Modifier 
+          <span class="optional-tag">(Optional)</span>
+        </label>
+        <input type="number" id="movement-modifier" step="0.1" placeholder="0.5 (Default)" min="0" max="1">
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Generated File: <span id="filename-preview" style="color: var(--accent-hover);">ground_smash.json</span></h2>
+    <pre><code id="json-preview"></code></pre>
+
+    <div class="actions">
+      <button class="btn" id="btn-download">Download .json</button>
+      <button class="btn btn-secondary" id="btn-copy">Copy Code</button>
+    </div>
+  </div>
+</div>
