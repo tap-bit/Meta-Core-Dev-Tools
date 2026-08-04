@@ -1,25 +1,24 @@
-// Utility Functions
 const toTitleCase = str => str.toLowerCase().split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 const toSnakeCase = str => str.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
 
 function generateData() {
-  const rawInput = document.getElementById('ability-name').value || 'ability';
+  const rawInput = document.getElementById('ability-name')?.value || 'ability';
   const snakeName = toSnakeCase(rawInput);
   const titleName = toTitleCase(rawInput);
 
-  const colorCode = document.getElementById('color-select').value;
-  const isBold = document.getElementById('style-bold').checked ? '§l' : '';
-  const isItalic = document.getElementById('style-italic').checked ? '§o' : '';
-  const isObfuscated = document.getElementById('style-obfuscated').checked ? '§k' : '';
+  const colorCode = document.getElementById('color-select')?.value || '';
+  const isBold = document.getElementById('style-bold')?.checked ? '§l' : '';
+  const isItalic = document.getElementById('style-italic')?.checked ? '§o' : '';
+  const isObfuscated = document.getElementById('style-obfuscated')?.checked ? '§k' : '';
 
   const formattingPrefix = `${colorCode}${isBold}${isItalic}${isObfuscated}`;
   const finalDisplayName = `${formattingPrefix}${titleName}`;
 
-  const rawStack = document.getElementById('max-stack').value;
-  const maxStack = rawStack !== '' ? parseInt(rawStack, 10) : 1;
+  const rawStack = document.getElementById('max-stack')?.value;
+  const maxStack = rawStack !== '' && rawStack !== undefined ? parseInt(rawStack, 10) : 1;
 
-  const rawMove = document.getElementById('movement-modifier').value;
-  const moveModifier = rawMove !== '' ? parseFloat(rawMove) : 0.5;
+  const rawMove = document.getElementById('movement-modifier')?.value;
+  const moveModifier = rawMove !== '' && rawMove !== undefined ? parseFloat(rawMove) : 0.5;
 
   const jsonObject = {
     "format_version": "1.20.50",
@@ -48,8 +47,11 @@ function generateData() {
 
 function updateJSON() {
   const { filename, jsonString } = generateData();
-  document.getElementById('filename-preview').innerText = filename;
-  document.getElementById('json-preview').innerText = jsonString;
+  const filenameEl = document.getElementById('filename-preview');
+  const previewEl = document.getElementById('json-preview');
+
+  if (filenameEl) filenameEl.innerText = filename;
+  if (previewEl) previewEl.innerText = jsonString;
 }
 
 function downloadJSON() {
@@ -72,7 +74,6 @@ function copyJSON() {
   });
 }
 
-// Initializer exported to app.js
 export function initAbilityGenerator() {
   const inputs = ['ability-name', 'color-select', 'style-bold', 'style-italic', 'style-obfuscated', 'max-stack', 'movement-modifier'];
   
@@ -84,6 +85,5 @@ export function initAbilityGenerator() {
   document.getElementById('btn-download')?.addEventListener('click', downloadJSON);
   document.getElementById('btn-copy')?.addEventListener('click', copyJSON);
 
-  // Render on load
   updateJSON();
 }
