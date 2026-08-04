@@ -134,7 +134,16 @@
       font-size: 0.9rem;
     }
 
-    input[type="text"], select {
+    .optional-tag {
+      font-size: 0.75rem;
+      font-weight: normal;
+      color: var(--text-muted);
+      margin-left: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], input[type="number"], select {
       width: 100%;
       padding: 0.75rem;
       background-color: var(--bg-input);
@@ -145,9 +154,18 @@
       box-sizing: border-box;
     }
 
-    input[type="text"]:focus, select:focus {
+    input[type="text"]:focus, input[type="number"]:focus, select:focus {
       outline: none;
       border-color: var(--accent-hover);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .form-row .form-group {
+      flex: 1;
     }
 
     .checkbox-group {
@@ -212,14 +230,11 @@
       background-color: #444;
     }
 
-    /* Live Display Name Box */
-    .formatted-preview {
-      margin-top: 0.5rem;
-      padding: 0.5rem 0.75rem;
-      background-color: #000;
-      border-radius: 4px;
-      min-height: 1.5rem;
-      font-family: 'Minecraft', 'Courier New', monospace;
+    hr.divider {
+      border: 0;
+      height: 1px;
+      background: var(--border);
+      margin: 1.5rem 0;
     }
   </style>
 </head>
@@ -228,10 +243,10 @@
   <header>
     <h1>Addon Dev Suite</h1>
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('ability-gen')">Ability Item Generator</button>
-      <button class="tab-btn disabled" onclick="switchTab('tool-2')">Coming Soon</button>
-      <button class="tab-btn disabled" onclick="switchTab('tool-3')">Coming Soon</button>
-      <button class="tab-btn disabled" onclick="switchTab('tool-4')">Coming Soon</button>
+      <button class="tab-btn active" onclick="switchTab('ability-gen', event)">Ability Item Generator</button>
+      <button class="tab-btn disabled" onclick="switchTab('tool-2', event)">Coming Soon</button>
+      <button class="tab-btn disabled" onclick="switchTab('tool-3', event)">Coming Soon</button>
+      <button class="tab-btn disabled" onclick="switchTab('tool-4', event)">Coming Soon</button>
     </div>
   </header>
 
@@ -244,7 +259,7 @@
           <h2>Ability Configuration</h2>
           
           <div class="form-group">
-            <label for="ability-name">Ability Name</label>
+            <label for="ability-name">Ability Name <span style="color: #ff5252;">*</span></label>
             <input type="text" id="ability-name" placeholder="e.g. ground smash" value="ground smash" oninput="updateJSON()">
             <small style="color: var(--text-muted);">Auto-converts spaces to lowercase snake_case for IDs.</small>
           </div>
@@ -298,6 +313,28 @@
               </label>
             </div>
           </div>
+
+          <hr class="divider">
+
+          <!-- Optional Settings -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="max-stack">
+                Max Stack Size 
+                <span class="optional-tag">(Optional)</span>
+              </label>
+              <input type="number" id="max-stack" placeholder="1 (Default)" min="1" max="64" oninput="updateJSON()">
+            </div>
+
+            <div class="form-group">
+              <label for="movement-modifier">
+                Movement Modifier 
+                <span class="optional-tag">(Optional)</span>
+              </label>
+              <input type="number" id="movement-modifier" step="0.1" placeholder="0.5 (Default)" min="0" max="1" oninput="updateJSON()">
+            </div>
+          </div>
+
         </div>
 
         <!-- Output JSON Panel -->
@@ -338,11 +375,11 @@
 
   <script>
     // Tab switching functionality
-    function switchTab(tabId) {
+    function switchTab(tabId, evt) {
       document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
       
-      event.currentTarget.classList.add('active');
+      evt.currentTarget.classList.add('active');
       document.getElementById(tabId).classList.add('active');
     }
 
@@ -374,6 +411,13 @@
       const formattingPrefix = `${colorCode}${isBold}${isItalic}${isObfuscated}`;
       const finalDisplayName = `${formattingPrefix}${titleName}`;
 
+      // Handle optional settings with fallbacks
+      const rawStack = document.getElementById('max-stack').value;
+      const maxStack = rawStack !== '' ? parseInt(rawStack, 10) : 1;
+
+      const rawMove = document.getElementById('movement-modifier').value;
+      const moveModifier = rawMove !== '' ? parseFloat(rawMove) : 0.5;
+
       const jsonObject = {
         "format_version": "1.20.50",
         "minecraft:item": {
@@ -384,7 +428,7 @@
             }
           },
           "components": {
-            "minecraft:max_stack_size": 1,
+            "minecraft:max_stack_size": maxStack,
             "minecraft:display_name": {
               "value": finalDisplayName
             },
@@ -393,7 +437,7 @@
             },
             "minecraft:use_modifiers": {
               "use_duration": 99999,
-              "movement_modifier": 0.5
+              "movement_modifier": moveModifier
             }
           }
         }
