@@ -1,37 +1,35 @@
-import { initAbilityGenerator } from './generators/ability-gen.js';
-
-const tabInitializers = {
-  'ability-gen': initAbilityGenerator,
-};
-
-async function loadTab(tabBtn) {
-  const tabId = tabBtn.dataset.tab;
-  const src = tabBtn.dataset.src;
+// js/app.js
+async function loadTab(tabName) {
   const container = document.getElementById('tab-container');
-
-  document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
-  tabBtn.classList.add('active');
-
+  
   try {
-    const response = await fetch(src);
+    const response = await fetch(`tabs/${tabName}.html`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
-    container.innerHTML = await response.text();
+    const html = await response.text();
+    container.innerHTML = html;
 
-    if (tabInitializers[tabId]) {
-      tabInitializers[tabId]();
+    // Trigger tab-specific JS initialization
+    if (tabName === 'ability-gen') {
+      import('./generators/ability-gen.js').then(module => {
+        if (module.init) module.init();
+      });
     }
-  } catch (err) {
-    container.innerHTML = `<div class="card coming-soon-card"><div class="section-title">Error Loading Tool</div></div>`;
-    console.error(err);
+  } catch (error) {
+    console.error('Error loading tab:', error);
+    container.innerHTML = `<div class="coming-soon">Failed to load content.</div>`;
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const defaultTab = document.querySelector('.tab.active');
-  if (defaultTab) loadTab(defaultTab);
-
-  document.querySelectorAll('.tab').forEach(button => {
-    button.addEventListener('click', (e) => loadTab(e.currentTarget));
+// Attach event listeners to tab buttons
+document.querySelectorAll('.tab-btn').forEach(button => {
+  button.addEventListener('click', (e) => {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    
+    const tabName = button.getAttribute('data-tab');
+    loadTab(tabName);
   });
 });
+
+// Load default tab on launch
+loadTab('ability-gen');
