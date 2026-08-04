@@ -4,164 +4,279 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minecraft Addon Developer Tools</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
   <style>
-    :root {
-      --bg-main: #121212;
-      --bg-card: #1e1e1e;
-      --bg-input: #2a2a2a;
-      --border: #333;
-      --accent: #388e3c;
-      --accent-hover: #4caf50;
-      --text: #e0e0e0;
-      --text-muted: #888;
+    :root { 
+      --cyan: #00e5ff; 
+      --cyan-glow: rgba(0, 229, 255, 0.6);
+      --cyan-dim: rgba(0, 229, 255, 0.1);
+      --bg-dark: #05070a; 
+      --card-bg: rgba(10, 14, 20, 0.6); 
+      --card-border: rgba(0, 229, 255, 0.2);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --danger: #ff4d4d;
+    }
+
+    /* BASE STYLES & SCROLLBAR */
+    html { scroll-behavior: smooth; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { 
+      background: var(--cyan-dim); 
+      border-radius: 10px; 
+      border: 1px solid var(--card-border); 
+    }
+    ::-webkit-scrollbar-thumb:hover { 
+      background: var(--cyan); 
+      box-shadow: 0 0 10px var(--cyan-glow); 
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-main);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% -20%, rgba(0, 229, 255, 0.15) 0%, transparent 60%),
+        linear-gradient(rgba(0, 229, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
+      color: var(--text-main);
       min-height: 100vh;
-    }
-
-    header {
-      background-color: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      padding: 1.5rem 2rem 0 2rem;
-    }
-
-    h1 {
-      margin: 0 0 1rem 0;
-      font-size: 1.5rem;
-      color: #fff;
-    }
-
-    /* Navigation Tabs */
-    .tabs {
-      display: flex;
-      gap: 0.5rem;
-      overflow-x: auto;
-    }
-
-    .tab-btn {
-      background: var(--bg-input);
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-      border-bottom: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 6px 6px 0 0;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .tab-btn:hover {
-      background: #333;
-      color: #fff;
-    }
-
-    .tab-btn.active {
-      background: var(--bg-main);
-      color: #fff;
-      border-color: var(--border);
-      border-bottom: 1px solid var(--bg-main);
-      margin-bottom: -1px;
-    }
-
-    .tab-btn.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Main Layout */
-    main {
-      flex: 1;
-      padding: 2rem;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
+      margin: 0;
+      padding: 40px 20px;
       box-sizing: border-box;
     }
 
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 2.8rem;
+      letter-spacing: 6px;
+      margin-bottom: 15px;
+      margin-top: 10px;
+      text-shadow: 0 0 30px var(--cyan-glow), 0 0 10px var(--cyan);
+      text-transform: uppercase;
+    }
+
+    h1 span { color: var(--cyan); }
+
+    /* SOCIAL LINKS */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .social-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-main);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
+      transition: all 0.3s ease;
+    }
+
+    .social-btn:hover {
+      color: #000;
+      background: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan-glow);
+      transform: translateY(-2px);
+    }
+
+    main {
+      max-width: 1400px;
+      width: 95%;
+      margin: auto;
+      position: relative;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 40px;
+      background: rgba(5, 7, 10, 0.7);
+      padding: 8px;
+      border-radius: 50px;
+      width: fit-content;
+      margin-inline: auto;
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 15px rgba(0, 229, 255, 0.05);
+    }
+
+    .tab-btn {
+      padding: 12px 28px;
+      cursor: pointer;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .tab-btn:hover:not(.disabled) {
+      color: #ffffff;
+      background: rgba(0, 229, 255, 0.05);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .tab-btn.active {
+      background: var(--cyan);
+      color: #000000;
+      box-shadow: 0 0 25px var(--cyan-glow), inset 0 0 10px rgba(255,255,255,0.6);
+      border-color: var(--cyan);
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* TAB CONTENT & ANIMATIONS */
     .tab-content {
       display: none;
     }
 
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
 
-    .coming-soon {
-      text-align: center;
-      padding: 4rem;
-      background-color: var(--bg-card);
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); filter: blur(6px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
     }
 
-    /* Tool Grid Layout */
+    /* TOOL GRID & CARDS */
     .tool-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 2rem;
+      gap: 24px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .tool-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .panel {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.5rem;
+    .panel, .coming-soon {
+      background: linear-gradient(145deg, var(--card-bg) 0%, rgba(2, 3, 5, 0.9) 100%);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 12px;
+      padding: 28px;
+      backdrop-filter: blur(20px) saturate(150%);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.02);
     }
 
+    /* Top Laser Border Animation */
+    .panel::before {
+      content: ''; 
+      position: absolute; 
+      top: 0; left: 0; 
+      width: 100%; height: 2px; 
+      background: linear-gradient(90deg, transparent, var(--cyan), #ffffff, var(--cyan), transparent);
+      transform: translateX(-100%); 
+      transition: transform 0.6s ease;
+    }
+
+    .panel:hover::before { transform: translateX(0); }
+
+    .panel h2, .coming-soon h2 {
+      font-size: 1.1rem; 
+      text-transform: uppercase; 
+      color: var(--cyan); 
+      margin-top: 0;
+      margin-bottom: 20px; 
+      font-weight: 900; 
+      border-bottom: 1px solid rgba(0, 229, 255, 0.2); 
+      padding-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px var(--cyan-glow);
+    }
+
+    /* FORMS & INPUTS */
     .form-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 800;
+      letter-spacing: 1px;
     }
 
     .optional-tag {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: normal;
-      color: var(--text-muted);
+      color: var(--cyan);
       margin-left: 0.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      opacity: 0.8;
     }
 
     input[type="text"], input[type="number"], select {
       width: 100%;
-      padding: 0.75rem;
-      background-color: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      padding: 14px;
+      border-radius: 8px;
       color: #fff;
-      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
       box-sizing: border-box;
+      outline: none;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
     }
 
     input[type="text"]:focus, input[type="number"]:focus, select:focus {
-      outline: none;
-      border-color: var(--accent-hover);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px var(--cyan-glow), inset 0 0 10px rgba(0, 229, 255, 0.1);
+      background: rgba(0, 229, 255, 0.05);
+    }
+
+    select option {
+      background-color: var(--bg-dark);
+      color: #fff;
     }
 
     .form-row {
       display: flex;
-      gap: 1rem;
+      gap: 16px;
     }
 
     .form-row .form-group {
@@ -170,78 +285,130 @@
 
     .checkbox-group {
       display: flex;
-      gap: 1.5rem;
-      margin-top: 0.5rem;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 8px;
     }
 
     .checkbox-label {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 10px;
       cursor: pointer;
-      font-weight: normal;
+      transition: 0.3s;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
     }
 
-    /* Formatting Options Selector */
-    .color-select option {
-      background-color: var(--bg-card);
-      color: #fff;
+    .checkbox-label:hover {
+      background: rgba(0, 229, 255, 0.1);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
     }
 
-    /* Preview Output */
+    .checkbox-label input[type="checkbox"] {
+      accent-color: var(--cyan);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* CODE & PREVIEW OUTPUT */
     pre {
-      background-color: var(--bg-input);
-      padding: 1rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      overflow-x: auto;
-      font-family: 'Consolas', 'Courier New', Courier, monospace;
-      font-size: 0.9rem;
-      color: #a9b7c6;
+      background: #020305; 
+      padding: 20px; 
+      border-radius: 8px; 
+      border: 1px solid rgba(0, 229, 255, 0.3); 
+      overflow-x: auto; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.9rem; 
+      color: var(--cyan); 
+      box-shadow: inset 0 5px 30px rgba(0,0,0,0.9);
+      line-height: 1.5;
     }
 
+    code {
+      font-family: inherit;
+    }
+
+    /* BUTTONS & ACTIONS */
     .actions {
       display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
+      gap: 16px;
+      margin-top: 20px;
     }
 
     button.btn {
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 4px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
       flex: 1;
+      padding: 14px; 
+      background: linear-gradient(135deg, var(--cyan) 0%, #008899 100%); 
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer; 
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(0, 229, 255, 0.3);
+      font-family: 'Inter', sans-serif;
     }
 
-    button.btn:hover {
-      background-color: var(--accent-hover);
+    button.btn:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 10px 25px var(--cyan-glow); 
+      background: linear-gradient(135deg, #44ffff 0%, var(--cyan) 100%);
     }
 
     button.btn-secondary {
-      background-color: #333;
+      background: rgba(255,255,255,0.05);
+      color: #fff; 
+      border: 1px solid rgba(255,255,255,0.15); 
+      box-shadow: none;
     }
 
     button.btn-secondary:hover {
-      background-color: #444;
+      background: var(--cyan-dim);
+      color: var(--cyan);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan-glow);
     }
 
     hr.divider {
       border: 0;
       height: 1px;
-      background: var(--border);
-      margin: 1.5rem 0;
+      background: rgba(0, 229, 255, 0.15);
+      margin: 24px 0;
+    }
+
+    .coming-soon {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .coming-soon p {
+      font-size: 1rem;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Addon Dev Suite</h1>
+    <h1>Addon Dev <span>Suite</span></h1>
+    
+    <div class="social-links">
+      <a href="https://www.youtube.com/@TapMCBE" target="_blank" rel="noopener noreferrer" class="social-btn">YouTube</a>
+      <a href="https://mcpedl.com/user/tap4954/" target="_blank" rel="noopener noreferrer" class="social-btn">MCPEDL</a>
+      <a href="https://discord.gg/Yr7Dbwc5f5" target="_blank" rel="noopener noreferrer" class="social-btn">Discord</a>
+    </div>
+
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('ability-gen', event)">Ability Item Generator</button>
       <button class="tab-btn disabled" onclick="switchTab('tool-2', event)">Coming Soon</button>
@@ -251,22 +418,20 @@
   </header>
 
   <main>
-    <!-- TAB 1: Ability Generator -->
     <div id="ability-gen" class="tab-content active">
       <div class="tool-grid">
-        <!-- Input Form -->
         <div class="panel">
           <h2>Ability Configuration</h2>
           
           <div class="form-group">
-            <label for="ability-name">Ability Name <span style="color: #ff5252;">*</span></label>
+            <label for="ability-name">Ability Name <span style="color: var(--danger);">*</span></label>
             <input type="text" id="ability-name" placeholder="e.g. ground smash" value="ground smash" oninput="updateJSON()">
-            <small style="color: var(--text-muted);">Auto-converts spaces to lowercase snake_case for IDs.</small>
+            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 6px;">Auto-converts spaces to lowercase snake_case for IDs.</small>
           </div>
 
           <div class="form-group">
             <label for="color-select">Display Color</label>
-            <select id="color-select" class="color-select" onchange="updateJSON()">
+            <select id="color-select" onchange="updateJSON()">
               <option value="">None (Default White)</option>
               <option value="§0">§0 Black</option>
               <option value="§1">§1 Dark Blue</option>
@@ -316,7 +481,6 @@
 
           <hr class="divider">
 
-          <!-- Optional Settings -->
           <div class="form-row">
             <div class="form-group">
               <label for="max-stack">
@@ -337,9 +501,8 @@
 
         </div>
 
-        <!-- Output JSON Panel -->
         <div class="panel">
-          <h2>Generated File: <span id="filename-preview" style="color: var(--accent-hover);">ground_smash.json</span></h2>
+          <h2>Generated File: <span id="filename-preview" style="color: var(--cyan); text-transform: none;">ground_smash.json</span></h2>
           <pre><code id="json-preview"></code></pre>
 
           <div class="actions">
@@ -350,7 +513,6 @@
       </div>
     </div>
 
-    <!-- Placeholder Tabs -->
     <div id="tool-2" class="tab-content">
       <div class="coming-soon">
         <h2>Tool #2 - Coming Soon</h2>
